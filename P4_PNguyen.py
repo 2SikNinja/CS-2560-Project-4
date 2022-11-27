@@ -3,6 +3,7 @@
 #Completed (or last revision): 11/22/22
 
 import random
+from statistics import *
 class Question:
      choices = []
      answer = int()
@@ -31,8 +32,12 @@ class Student:
           if (s > self.highestScore):
                print("You did better than your last high score, nice work!")
                self.highestScore = s
+     def resetScore(self):
+          self.currentScore = 0
      def getName(self):
           return self.name
+     def getCurrentScore(self):
+          return self.currentScore
      def getHS(self):
           return self.highestScore
 class Test:
@@ -68,8 +73,12 @@ class Test:
           print("Test over, you got", score, "points")
           stu.setScore(score)
           print(stu.getName() + "'s highest score:", stu.getHS())
+     
 
 def main():
+     studentScores = []
+     studentScoresTotalList = []
+     studentCount = 1
      test = Test()
      test.addQuestion("Q1: What does CPP stand for?", ["C++", "Cal Poly Pomona", "California Ping Pong", "Chrismas Professional Performace"], 2)
      test.addQuestion("Q2: How many people are on Earth now?", ["5 Billion", "6 Billion", "7 Billion", "8 Billion"], 4)
@@ -93,22 +102,53 @@ def main():
      test.addQuestion("Q20: How many Pokemon are there in Generation 1?", ["132","164","151","142"], 3)
      s1 = Student()
      while True:
-          selection = input("Welcome to the random multiple choice\n"\
-          "Would you like to take / retake the test? [Y/N]: \n")
-          if selection == 'Y' or selection == 'y':
-               print("\n")
-               print("Begin Test")
-               try:
-                    name = input("Student name: ")
-                    s1.setStudent(name, input("Student email: "))
-               except ValueError:
-                    print("Invalid ID entered. ID has been set to 1234")
-               test.takeTest(s1,5)
-          elif selection == 'N' or selection == 'n':
-               print("That's okay, see you later! \n")
-               break
-          else:
-               print("Invalid input. \n")
+          try:
+               selection = input("\n\n\nWelcome to the random multiple choice\n\n"\
+               "Would you like to take test? [Y/N]: \n")
+               if selection == 'Y' or selection == 'y':
+                    print("\n")
+                    print("Begin Test")
+                    try:
+                         name = input("Student name: ")
+                         s1.setStudent(name, input("Student email: "))
+                    except ValueError:
+                         print("Invalid ID entered. ID has been set to 1234")
+                    test.takeTest(s1,5)
+                    studentScores.append(s1.getCurrentScore())
+                    print(studentScores)
+               elif selection == 'N' or selection == 'n':
+                    print("That's okay, see you later! \n")
+                    break
+               else:
+                    print("Invalid input. \n")
+               while True:
+                    newselection = input("Would you like to retake test? [Y/N]: \n")
+                    if newselection == 'Y' or newselection == 'y':
+                         print("\n")
+                         print("Begin Test")
+                         test.takeTest(s1,5)
+                         studentScores.append(s1.getCurrentScore())
+                         print(studentScores)
+                    elif newselection == 'N' or newselection == 'n':
+                         print("That's okay, see you later! \n")
+                         break
+                    else:
+                         print("Invalid input. \n")
+               newStudent = input("\n\n\n\n\nWould a new student like to take the test? [Y/N]: \n\n")
+               s1.resetScore()
+               if newStudent == 'Y' or newStudent == 'y':
+                    studentScoreCountNumber = len(studentScores)
+                    for i in range(studentScoreCountNumber):
+                         studentScoresTotalList.append(studentScores[i])
+                    studentScores.clear()
+                    studentCount += 1
+               else:
+                    print("That's okay, see you later! \n")
+                    break
+          except StatisticsError:     
+               print("No One Wants to take the test ;(")
+     print("This many students have taken the test: ", studentCount)
+     print("The average test score is: ", mean(studentScoresTotalList))
 main()
           
           
